@@ -1,4 +1,3 @@
-// routes/ingredientes.js
 const express = require('express');
 const router = express.Router();
 const { Ingrediente } = require('../models');
@@ -9,46 +8,61 @@ router.get('/', async (req, res) => {
     const ingredientes = await Ingrediente.findAll();
     res.json(ingredientes);
   } catch (error) {
-    console.error('Error al obtener ingredientes:', error);
-    res.status(500).json({ error: 'Error al obtener ingredientes.' });
+    res.status(500).json({ error: 'Error al obtener los ingredientes' });
+  }
+});
+
+// Obtener un ingrediente específico
+router.get('/:id', async (req, res) => {
+  try {
+    const ingredienteId = req.params.id;
+    const ingrediente = await Ingrediente.findByPk(ingredienteId);
+
+    if (!ingrediente) {
+      return res.status(404).json({ error: 'Ingrediente no encontrado' });
+    }
+
+    res.json(ingrediente);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener el ingrediente' });
   }
 });
 
 // Crear un nuevo ingrediente
 router.post('/', async (req, res) => {
-  const { nombre, unidad, cantidad_porcion, stock_actual, stock_minimo } = req.body;
   try {
-    const nuevoIngrediente = await Ingrediente.create({
-      nombre,
-      unidad,
-      cantidad_porcion,
-      stock_actual,
-      stock_minimo
-    });
-    res.json(nuevoIngrediente);
+    const { name, stock_current, stock_minimum } = req.body;
+    const nuevoIngrediente = await Ingrediente.create({ name, stock_current, stock_minimum });
+    res.status(201).json(nuevoIngrediente);
   } catch (error) {
-    console.error('Error al crear ingrediente:', error);
-    res.status(500).json({ error: 'Error al crear ingrediente.' });
+    res.status(500).json({ error: 'Error al crear el ingrediente' });
   }
 });
-// Editar un ingrediente
+
+// Actualizar un ingrediente
 router.put('/:id', async (req, res) => {
   try {
-    const ingrediente = await Ingrediente.findByPk(req.params.id);
+    const ingredienteId = req.params.id;
+    const { name, stock_current, stock_minimum } = req.body;
+
+    const ingrediente = await Ingrediente.findByPk(ingredienteId);
     if (!ingrediente) {
       return res.status(404).json({ error: 'Ingrediente no encontrado' });
     }
 
-    await ingrediente.update(req.body);
+    await ingrediente.update({ name, stock_current, stock_minimum });
     res.json(ingrediente);
   } catch (error) {
-    res.status(500).json({ error: 'Error al editar ingrediente' });
+    res.status(500).json({ error: 'Error al actualizar el ingrediente' });
   }
 });
+
 // Eliminar un ingrediente
 router.delete('/:id', async (req, res) => {
   try {
-    const ingrediente = await Ingrediente.findByPk(req.params.id);
+    const ingredienteId = req.params.id;
+
+    const ingrediente = await Ingrediente.findByPk(ingredienteId);
     if (!ingrediente) {
       return res.status(404).json({ error: 'Ingrediente no encontrado' });
     }
@@ -56,9 +70,8 @@ router.delete('/:id', async (req, res) => {
     await ingrediente.destroy();
     res.json({ message: 'Ingrediente eliminado correctamente' });
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar ingrediente' });
+    res.status(500).json({ error: 'Error al eliminar el ingrediente' });
   }
 });
-
 
 module.exports = router;

@@ -1,33 +1,23 @@
-const { Model, DataTypes } = require('sequelize');
-const sequelize = require('../config/db');  // Asegúrate de que esto esté correctamente configurado
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-class Producto extends Model {}
-
-Producto.init({
-  nombre: {
+const Arepa = sequelize.define('Arepa', {
+  arepa_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  categoria: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  precio_venta: {
-    type: DataTypes.FLOAT,
-    allowNull: false
-  },
-  stock_actual: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  stock_minimo: {
-    type: DataTypes.INTEGER,
+  price: {
+    type: DataTypes.INTEGER, // Cambiado a INTEGER para manejar precios sin decimales
     allowNull: false
   }
 }, {
-  sequelize,
-  modelName: 'Producto',
-  timestamps: true
+  tableName: 'arepas',
+  timestamps: false
 });
 
-module.exports = Producto;
+module.exports = Arepa;

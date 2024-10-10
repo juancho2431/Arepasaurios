@@ -1,33 +1,28 @@
-const { Model, DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
-class Ingrediente extends Model {}
-
-Ingrediente.init({
-  nombre: {
+const Ingrediente = sequelize.define('Ingrediente', {
+  ingredient_id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  name: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  unidad: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  cantidad_porcion: {
-    type: DataTypes.FLOAT,
-    allowNull: false
-  },
-  stock_actual: {
+  stock_current: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  stock_minimo: {
+  stock_minimum: {
     type: DataTypes.INTEGER,
     allowNull: false
   }
 }, {
-  sequelize,
-  modelName: 'Ingrediente',
-  timestamps: true
+  tableName: 'ingredients',
+  timestamps: false
 });
 
 module.exports = Ingrediente;
+

@@ -1,20 +1,26 @@
-const Sequelize = require('sequelize');
 const sequelize = require('../config/db');
+const Arepa = require('./Producto');
+const Ingrediente = require('./ingrediente');
+const ArepaIngrediente = require('./productosIngrediente');
+const Bebida = require('./bebida');
 
-// Importar modelos directamente
-const Producto = require('./Producto');
-const Ingrediente = require('./Ingrediente');
-const ProductoIngrediente = require('./ProductoIngrediente');
+// Definir las relaciones entre los modelos
+Arepa.belongsToMany(Ingrediente, { through: ArepaIngrediente, foreignKey: 'arepa_id' });
+Ingrediente.belongsToMany(Arepa, { through: ArepaIngrediente, foreignKey: 'ingredient_id' });
 
-// Asociaciones
-Producto.belongsToMany(Ingrediente, { through: ProductoIngrediente });
-Ingrediente.belongsToMany(Producto, { through: ProductoIngrediente });
+// Sincronizar modelos con la base de datos
+sequelize.sync({ force: false }) // `force: false` mantiene las tablas existentes sin borrarlas
+  .then(() => {
+    console.log('Tablas sincronizadas.');
+  })
+  .catch((error) => {
+    console.error('Error al sincronizar las tablas:', error);
+  });
 
-// Exportar los modelos
-const models = {
-  Producto,
+module.exports = {
+  sequelize,
+  Arepa,
   Ingrediente,
-  ProductoIngrediente,
+  ArepaIngrediente,
+  Bebida
 };
-
-module.exports = { ...models, sequelize };
