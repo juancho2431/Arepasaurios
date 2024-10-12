@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const router = express.Router();
-const { Arepa, Ingrediente, ArepaIngrediente } = require('../models');
+const { Arepa, Ingrediente, ArepaIngrediente, Ventas, VentaDetalle } = require('../models');
 
 // Obtener todas las arepas con sus ingredientes
 router.get('/', async (req, res) => {

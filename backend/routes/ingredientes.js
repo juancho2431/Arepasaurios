@@ -30,11 +30,25 @@ router.get('/:id', async (req, res) => {
 
 // Crear un nuevo ingrediente
 router.post('/', async (req, res) => {
+  const { ingredientes } = req.body;
+
+  if (!ingredientes || !Array.isArray(ingredientes)) {
+    return res.status(400).json({ error: 'Debe proporcionar una lista de ingredientes.' });
+  }
+
   try {
-    const { name, stock_current, stock_minimum } = req.body;
-    const nuevoIngrediente = await Ingrediente.create({ name, stock_current, stock_minimum });
-    res.status(201).json(nuevoIngrediente);
+    // Iterar sobre los ingredientes y crear cada uno
+    for (const ingrediente of ingredientes) {
+      await Ingrediente.create({
+        name: ingrediente.name,
+        stock_current: ingrediente.stock_current,
+        stock_minimum: ingrediente.stock_minimum,
+      });
+    }
+
+    res.status(201).json({ message: 'Ingredientes creados con éxito' });
   } catch (error) {
+    console.error('Error al crear el ingrediente:', error);
     res.status(500).json({ error: 'Error al crear el ingrediente' });
   }
 });

@@ -1,12 +1,14 @@
+// index.js
 const express = require('express');
 const cors = require('cors');
 const app = express();
 const port = 3000;
 
-// Importar las rutas de arepas e ingredientes
+// Importar las rutas de arepas, ingredientes, bebidas, y ventas
 const arepaRoutes = require('./routes/arepas');
 const ingredienteRoutes = require('./routes/ingredientes');
-const bebidaRoutes = require('./routes/bebidas'); // Para el CRUD de bebidas (paso 6)
+const bebidaRoutes = require('./routes/bebidas');
+const ventasRoutes = require('./routes/ventas');
 
 // Middleware para analizar JSON
 app.use(express.json());
@@ -17,7 +19,8 @@ app.use(cors());
 // Registrar las rutas de la API
 app.use('/api/arepas', arepaRoutes);
 app.use('/api/ingredientes', ingredienteRoutes);
-app.use('/api/bebidas', bebidaRoutes); // Registrar la ruta de bebidas
+app.use('/api/bebidas', bebidaRoutes);
+app.use('/api/ventas', ventasRoutes); // Registrar la ruta de ventas
 
 // Middleware para manejar errores
 app.use((err, req, res, next) => {

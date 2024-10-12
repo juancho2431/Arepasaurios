@@ -24,13 +24,24 @@ function IngredientesTable() {
 
   const handleAddIngrediente = async () => {
     try {
-      await axios.post('http://localhost:3000/api/ingredientes', newIngrediente);
+      const ingredienteData = {
+        ingredientes: [newIngrediente] // Enviar como lista de un solo elemento
+      };
+      await axios.post('http://localhost:3000/api/ingredientes', ingredienteData);
       fetchIngredientes();
       setNewIngrediente({ name: '', stock_current: 0, stock_minimum: 0 });
     } catch (error) {
-      console.error('Error al agregar el ingrediente:', error);
+      if (error.response) {
+        console.error('Error al agregar el ingrediente:', error.response.data);
+      } else if (error.request) {
+        console.error('No se recibió respuesta del servidor:', error.request);
+      } else {
+        console.error('Error al configurar la solicitud:', error.message);
+      }
     }
   };
+  
+  
 
   const handleEditIngrediente = async (id) => {
     try {
