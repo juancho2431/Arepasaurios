@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import '../styles/Facturacion.css'
 
 const Facturacion = () => {
@@ -135,6 +136,7 @@ const Facturacion = () => {
               <th>ID Venta</th>
               <th>Fecha</th>
               <th>Total</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -143,6 +145,7 @@ const Facturacion = () => {
                 <td>{venta.ventas_id}</td>
                 <td>{new Date(venta.fecha).toLocaleString()}</td>
                 <td>{venta.total}</td>
+                <td> <Link to={`/facturacion/imprimir/${venta.ventas_id}`} className="btn">Imprimir Factura</Link></td>
               </tr>
             ))}
           </tbody>

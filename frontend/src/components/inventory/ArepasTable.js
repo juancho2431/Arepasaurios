@@ -194,7 +194,7 @@ function ArepasTable() {
         type="number"
         placeholder="Cantidad"
         value={ingredienteSeleccionado.amount}
-        onChange={(e) => setIngredienteSeleccionado({ ...ingredienteSeleccionado, amount: e.target.value })}
+        onChange={(e) => setIngredienteSeleccionado({ ...ingredienteSeleccionado, amount: parseFloat(e.target.value) })}
       />
       <button onClick={handleAddIngredient}>Agregar Ingrediente</button>
 

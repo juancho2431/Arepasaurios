@@ -6,6 +6,7 @@ import Inventario from './pages/Inventario';
 import Facturacion from './pages/Facturacion';
 import Usuarios from './pages/Usuarios';
 import Reportes from './pages/Reportes';
+import ImprimirFactura from './components/facturacion/ImprimirFactura';
 import logo from './assets/LOGO_AREPASAURIOS.png'; // Importa el logo
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/inventario" element={<Inventario />} />
             <Route path="/facturacion" element={<Facturacion />} />
+            <Route path="/facturacion/imprimir/:ventaId" element={<ImprimirFactura />} />
             <Route path="/usuarios" element={<Usuarios />} />
             <Route path="/reportes" element={<Reportes />} />
           </Routes>

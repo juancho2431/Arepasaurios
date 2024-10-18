@@ -17,7 +17,7 @@ const ArepaIngrediente = sequelize.define('ArepaIngrediente', {
     }
   },
   amount: {
-    type: DataTypes.STRING,
+    type: DataTypes.FLOAT,
     allowNull: false
   }
 }, {

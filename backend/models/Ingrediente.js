@@ -12,11 +12,11 @@ const Ingrediente = sequelize.define('Ingrediente', {
     allowNull: false
   },
   stock_current: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.FLOAT,
     allowNull: false
   },
   stock_minimum: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.FLOAT,
     allowNull: false
   }
 }, {

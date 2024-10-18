@@ -1,11 +1,11 @@
 // routes/ventas.js
 const express = require('express');
 const router = express.Router();
-const { Arepa, Bebida, Ingrediente, Ventas, VentaDetalle} = require('../models');
+const { Arepa, Bebida, Ingrediente, Ventas, VentaDetalle } = require('../models');
+const sequelize = require('../config/db');
 console.log('Modelo Ventas:', Ventas);
 
-const sequelize = require('../config/db');
-
+// Ruta para obtener todas las ventas
 router.get('/', async (req, res) => {
   console.log('Intentando obtener todas las ventas...');
   try {
@@ -13,6 +13,7 @@ router.get('/', async (req, res) => {
       include: [
         {
           model: VentaDetalle,
+          as: 'VentaDetalles',
           include: [
             {
               model: Arepa,
@@ -31,17 +32,60 @@ router.get('/', async (req, res) => {
       ]
     });
 
-    console.log('Ventas obtenidas:', ventas);
+    if (!ventas.length) {
+      return res.status(404).json({ error: 'No se encontraron ventas.' });
+    }
+
     res.json(ventas);
   } catch (error) {
     console.error('Error al obtener las ventas:', error);
-    res.status(500).json({ error: 'Error al obtener las ventas', detalle: error.message });
+    res.status(500).json({ error: 'Error al obtener las ventas' });
   }
 });
 
-// Ruta para realizar una venta
+// Ruta para obtener una venta específica por ID
+router.get('/:ventaId', async (req, res) => {
+  const { ventaId } = req.params;
+  try {
+    console.log('Intentando obtener la venta con ventaId:', ventaId);
+    const venta = await Ventas.findByPk(ventaId, {
+      include: [
+        {
+          model: VentaDetalle,
+          as: 'VentaDetalles',
+          include: [
+            {
+              model: Arepa,
+              as: 'arepa',
+              attributes: ['name', 'price'],
+              required: false
+            },
+            {
+              model: Bebida,
+              as: 'bebida',
+              attributes: ['name', 'price'],
+              required: false
+            }
+          ]
+        }
+      ]
+    });
+
+    if (!venta) {
+      return res.status(404).json({ error: 'Venta no encontrada' });
+    }
+
+    console.log('Resultado de la consulta:', venta);
+    res.json(venta);
+  } catch (error) {
+    console.error('Error al obtener la venta:', error);
+    res.status(500).json({ error: 'Error al obtener la venta' });
+  }
+});
+
+// Ruta para crear una nueva venta
 router.post('/', async (req, res) => {
-  const { fecha, total, detalles } = req.body;
+  const { fecha, total, metodoPago, detalles } = req.body;
 
   // Validar los datos de la solicitud
   if (!fecha || !total || !Array.isArray(detalles) || detalles.length === 0) {
@@ -52,7 +96,7 @@ router.post('/', async (req, res) => {
     // Iniciar una transacción para asegurar la consistencia de los datos
     await sequelize.transaction(async (transaction) => {
       // Crear la venta principal
-      const venta = await Ventas.create({ fecha, total }, { transaction });
+      const venta = await Ventas.create({ fecha, total, metodoPago }, { transaction });
 
       // Iterar sobre los detalles para crear registros y actualizar el stock
       for (const detalle of detalles) {
@@ -65,7 +109,7 @@ router.post('/', async (req, res) => {
 
         // Crear el registro del detalle de la venta
         await VentaDetalle.create({
-          venta_id: venta.ventas_id, // Asegurar que se está usando el ID correcto de la venta recién creada
+          venta_id: venta.ventas_id,
           producto_id,
           tipo_producto,
           cantidad,
@@ -124,6 +168,21 @@ router.post('/', async (req, res) => {
   }
 });
 
-
+// Ruta para eliminar una venta por ID
+router.delete('/:ventaId', async (req, res) => {
+  const { ventaId } = req.params;
+  try {
+    console.log('Intentando eliminar la venta con ventaId:', ventaId);
+    const venta = await Ventas.findByPk(ventaId);
+    if (!venta) {
+      return res.status(404).json({ error: 'Venta no encontrada' });
+    }
+    await venta.destroy();
+    res.json({ message: 'Venta eliminada exitosamente.' });
+  } catch (error) {
+    console.error('Error al eliminar la venta:', error);
+    res.status(500).json({ error: 'Error al eliminar la venta' });
+  }
+});
 
 module.exports = router;
