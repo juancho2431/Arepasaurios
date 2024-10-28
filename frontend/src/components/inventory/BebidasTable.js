@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function BebidasTable() {
+function BebidasTable({ isReadOnly }) {
   const [bebidas, setBebidas] = useState([]);
   const [newBebida, setNewBebida] = useState({
     name: '',
@@ -61,7 +61,7 @@ function BebidasTable() {
             <th>Nombre</th>
             <th>Stock</th>
             <th>Precio</th>
-            <th>Acciones</th>
+            {!isReadOnly && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -69,73 +69,91 @@ function BebidasTable() {
             <tr key={bebida.bebida_id}>
               <td>{bebida.bebida_id}</td>
               <td>
-                <input
-                  type="text"
-                  value={bebida.name}
-                  onChange={(e) =>
-                    setBebidas((prev) =>
-                      prev.map((b) =>
-                        b.bebida_id === bebida.bebida_id ? { ...b, name: e.target.value } : b
+                {isReadOnly ? (
+                  bebida.name
+                ) : (
+                  <input
+                    type="text"
+                    value={bebida.name}
+                    onChange={(e) =>
+                      setBebidas((prev) =>
+                        prev.map((b) =>
+                          b.bebida_id === bebida.bebida_id ? { ...b, name: e.target.value } : b
+                        )
                       )
-                    )
-                  }
-                />
+                    }
+                  />
+                )}
               </td>
               <td>
-                <input
-                  type="number"
-                  value={bebida.stock}
-                  onChange={(e) =>
-                    setBebidas((prev) =>
-                      prev.map((b) =>
-                        b.bebida_id === bebida.bebida_id ? { ...b, stock: e.target.value } : b
+                {isReadOnly ? (
+                  bebida.stock
+                ) : (
+                  <input
+                    type="number"
+                    value={bebida.stock}
+                    onChange={(e) =>
+                      setBebidas((prev) =>
+                        prev.map((b) =>
+                          b.bebida_id === bebida.bebida_id ? { ...b, stock: e.target.value } : b
+                        )
                       )
-                    )
-                  }
-                />
+                    }
+                  />
+                )}
               </td>
               <td>
-                <input
-                  type="number"
-                  value={bebida.price}
-                  onChange={(e) =>
-                    setBebidas((prev) =>
-                      prev.map((b) =>
-                        b.bebida_id === bebida.bebida_id ? { ...b, price: e.target.value } : b
+                {isReadOnly ? (
+                  bebida.price
+                ) : (
+                  <input
+                    type="number"
+                    value={bebida.price}
+                    onChange={(e) =>
+                      setBebidas((prev) =>
+                        prev.map((b) =>
+                          b.bebida_id === bebida.bebida_id ? { ...b, price: e.target.value } : b
+                        )
                       )
-                    )
-                  }
-                />
+                    }
+                  />
+                )}
               </td>
-              <td>
-                <button onClick={() => handleEditBebida(bebida.bebida_id)}>Editar</button>
-                <button onClick={() => handleDeleteBebida(bebida.bebida_id)}>Eliminar</button>
-              </td>
+              {!isReadOnly && (
+                <td>
+                  <button onClick={() => handleEditBebida(bebida.bebida_id)}>Editar</button>
+                  <button onClick={() => handleDeleteBebida(bebida.bebida_id)}>Eliminar</button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
 
-      <h3>Agregar Bebida</h3>
-      <input
-        type="text"
-        placeholder="Nombre"
-        value={newBebida.name}
-        onChange={(e) => setNewBebida({ ...newBebida, name: e.target.value })}
-      />
-      <input
-        type="number"
-        placeholder="Stock"
-        value={newBebida.stock}
-        onChange={(e) => setNewBebida({ ...newBebida, stock: e.target.value })}
-      />
-      <input
-        type="number"
-        placeholder="Precio"
-        value={newBebida.price}
-        onChange={(e) => setNewBebida({ ...newBebida, price: e.target.value })}
-      />
-      <button onClick={handleAddBebida}>Agregar</button>
+      {!isReadOnly && (
+        <div>
+          <h3>Agregar Bebida</h3>
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={newBebida.name}
+            onChange={(e) => setNewBebida({ ...newBebida, name: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Stock"
+            value={newBebida.stock}
+            onChange={(e) => setNewBebida({ ...newBebida, stock: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Precio"
+            value={newBebida.price}
+            onChange={(e) => setNewBebida({ ...newBebida, price: e.target.value })}
+          />
+          <button onClick={handleAddBebida}>Agregar</button>
+        </div>
+      )}
     </div>
   );
 }

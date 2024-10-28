@@ -66,39 +66,6 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    height: auto;
-    box-shadow: none;
-  }
-
-  .sidebar ul {
-    display: flex;
-    justify-content: space-around;
-  }
-
-  .content {
-    padding: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .sidebar ul li a {
-    font-size: 16px;
-    padding: 8px;
-  }
-
-  .content {
-    padding: 5px;
-  }
-}
-
 /* Button Styles */
 button {
   background: #50a3a2;
@@ -112,4 +79,95 @@ button {
 
 button:hover {
   background: #4a90e2;
+}
+.logout-button {
+  background: #dc3545; /* Rojo de advertencia */
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-size: 16px;
+  width: 70%;
+  margin: 10px auto;
+}
+
+.logout-button:hover {
+  background: #c82333; /* Rojo más oscuro para hover */
+}
+
+.menu-hamburguesa {
+font-size: 1px;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+  }
+
+  .menu-hamburguesa {
+    display: block;
+    font-size: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    color: #000;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: linear-gradient(135deg, #4a90e2, #50a3a2);
+    transition: left 0.3s ease;
+    z-index: 9;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .sidebar ul {
+    display: block;
+  }
+
+  .sidebar ul li {
+    text-align: center;
+    margin: 10px 0;
+  }
+
+  .sidebar ul li a {
+    font-size: 18px;
+    display: block;
+    padding: 15px;
+    text-decoration: none;
+    color: #ffffff;
+  }
+
+  .content {
+    padding: 10px;
+    margin-top: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar ul li a {
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  .content {
+    padding: 5px;
+  }
 }

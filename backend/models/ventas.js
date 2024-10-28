@@ -1,25 +1,43 @@
 // models/Ventas.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const Empleado = require('./Empleado'); // Importa el modelo de Empleado si es necesario
 
 const Ventas = sequelize.define('Ventas', {
   ventas_id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
+    autoIncrement: true
   },
   fecha: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: false
   },
   total: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0,
+    type: DataTypes.FLOAT,
+    allowNull: false
   },
+  cliente: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  metodo_pago: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  vendedor_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Empleado,
+      key: 'empleado_id'
+    },
+    allowNull: true
+  }
 }, {
-  tableName: 'ventas',  // Asegúrate de que el nombre de la tabla esté en minúsculas
-  timestamps: false,
+  tableName: 'ventas',
+  timestamps: false
 });
+
+// Relación con el modelo de Empleado (vendedor)
 
 module.exports = Ventas;

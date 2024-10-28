@@ -9,8 +9,11 @@ const arepaRoutes = require('./routes/arepas');
 const ingredienteRoutes = require('./routes/ingredientes');
 const bebidaRoutes = require('./routes/bebidas');
 const ventasRoutes = require('./routes/ventas');
+const empleadosRouter = require('./routes/empleados');
+const loginRoutes = require('./routes/auth');
 
 // Middleware para analizar JSON
+
 app.use(express.json());
 
 // Middleware para manejar CORS
@@ -21,6 +24,9 @@ app.use('/api/arepas', arepaRoutes);
 app.use('/api/ingredientes', ingredienteRoutes);
 app.use('/api/bebidas', bebidaRoutes);
 app.use('/api/ventas', ventasRoutes); // Registrar la ruta de ventas
+app.use('/api/empleados', empleadosRouter);
+app.use('/api/login', loginRoutes);
+
 
 // Middleware para manejar errores
 app.use((err, req, res, next) => {

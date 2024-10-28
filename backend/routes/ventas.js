@@ -1,7 +1,7 @@
 // routes/ventas.js
 const express = require('express');
 const router = express.Router();
-const { Arepa, Bebida, Ingrediente, Ventas, VentaDetalle } = require('../models');
+const { Arepa, Bebida, Ingrediente, Ventas, VentaDetalle, Empleado } = require('../models');
 const sequelize = require('../config/db');
 console.log('Modelo Ventas:', Ventas);
 
@@ -48,7 +48,9 @@ router.get('/:ventaId', async (req, res) => {
   const { ventaId } = req.params;
   try {
     console.log('Intentando obtener la venta con ventaId:', ventaId);
+
     const venta = await Ventas.findByPk(ventaId, {
+      attributes: ['ventas_id', 'fecha', 'total', 'cliente', 'metodo_pago'],
       include: [
         {
           model: VentaDetalle,
@@ -67,36 +69,48 @@ router.get('/:ventaId', async (req, res) => {
               required: false
             }
           ]
+        },
+        {
+          model: Empleado,
+          as: 'vendedor',
+          attributes: ['nombre', 'apellido'], // Atributos específicos del vendedor
         }
       ]
     });
 
     if (!venta) {
+      console.log('Venta no encontrada para ventaId:', ventaId);
       return res.status(404).json({ error: 'Venta no encontrada' });
     }
 
-    console.log('Resultado de la consulta:', venta);
+    console.log('Resultado de la consulta:', JSON.stringify(venta, null, 2));
     res.json(venta);
   } catch (error) {
-    console.error('Error al obtener la venta:', error);
-    res.status(500).json({ error: 'Error al obtener la venta' });
+    console.error('Error al obtener la venta:', error.message);
+    res.status(500).json({ error: 'Error al obtener la venta', detalle: error.message });
   }
 });
 
-// Ruta para crear una nueva venta
+
 router.post('/', async (req, res) => {
-  const { fecha, total, metodoPago, detalles } = req.body;
+  const { fecha, total, metodo_pago, cliente, vendedor_id, detalles } = req.body;
 
   // Validar los datos de la solicitud
-  if (!fecha || !total || !Array.isArray(detalles) || detalles.length === 0) {
-    return res.status(400).json({ message: 'Debe proporcionar una fecha, un total y detalles válidos para la venta.' });
+  if (!fecha || !total || !metodo_pago || !cliente || !vendedor_id || !Array.isArray(detalles) || detalles.length === 0) {
+    return res.status(400).json({ message: 'Debe proporcionar una fecha, un total, método de pago, cliente, vendedor y detalles válidos para la venta.' });
   }
 
   try {
     // Iniciar una transacción para asegurar la consistencia de los datos
     await sequelize.transaction(async (transaction) => {
-      // Crear la venta principal
-      const venta = await Ventas.create({ fecha, total, metodoPago }, { transaction });
+      // Crear la venta principal con los campos adicionales
+      const venta = await Ventas.create({
+        fecha,
+        total,
+        metodo_pago,
+        cliente,
+        vendedor_id
+      }, { transaction });
 
       // Iterar sobre los detalles para crear registros y actualizar el stock
       for (const detalle of detalles) {
@@ -167,6 +181,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Error al crear la venta', detalle: error.message });
   }
 });
+
 
 // Ruta para eliminar una venta por ID
 router.delete('/:ventaId', async (req, res) => {

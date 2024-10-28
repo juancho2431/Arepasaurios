@@ -53,11 +53,13 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Actualizar un ingrediente
+// routes/ingrediente.js
 router.put('/:id', async (req, res) => {
   try {
     const ingredienteId = req.params.id;
     const { name, stock_current, stock_minimum } = req.body;
+
+    console.log('Datos recibidos:', req.body); // Agregar esta línea para depurar
 
     const ingrediente = await Ingrediente.findByPk(ingredienteId);
     if (!ingrediente) {
@@ -67,9 +69,12 @@ router.put('/:id', async (req, res) => {
     await ingrediente.update({ name, stock_current, stock_minimum });
     res.json(ingrediente);
   } catch (error) {
+    console.error('Error al actualizar el ingrediente:', error);
     res.status(500).json({ error: 'Error al actualizar el ingrediente' });
   }
 });
+
+
 
 // Eliminar un ingrediente
 router.delete('/:id', async (req, res) => {

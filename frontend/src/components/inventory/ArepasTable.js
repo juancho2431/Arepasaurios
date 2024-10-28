@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function ArepasTable() {
+function ArepasTable({ isReadOnly }) {
   const [arepas, setArepas] = useState([]);
   const [newArepa, setNewArepa] = useState({
     name: '',
@@ -43,13 +43,22 @@ function ArepasTable() {
         alert('Debe agregar al menos un ingrediente con una cantidad válida.');
         return;
       }
+
+      // Validar que todos los ingredientes tengan una cantidad mayor a 0
+      for (const ing of newArepa.ingredientes) {
+        if (isNaN(ing.amount) || ing.amount <= 0) {
+          alert('Debe ingresar un ID de ingrediente válido y una cantidad mayor a cero.');
+          return;
+        }
+      }
+
       // Asegurarse de que el precio sea un número y los ingredientes estén bien formados
       const arepaToSend = {
         name: newArepa.name,
         price: parseFloat(newArepa.price),
         ingredientes: newArepa.ingredientes.map((ing) => ({
           id: parseInt(ing.ingredient_id),
-          amount: ing.amount.toString()
+          amount: parseFloat(ing.amount) // Convertir a número decimal
         }))
       };
       console.log('Datos de la arepa a enviar:', JSON.stringify(arepaToSend, null, 2));
@@ -86,7 +95,7 @@ function ArepasTable() {
   const handleAddIngredient = () => {
     console.log('Ingrediente seleccionado:', ingredienteSeleccionado);
     const ingredientId = parseInt(ingredienteSeleccionado.ingredient_id);
-    const amount = parseInt(ingredienteSeleccionado.amount);
+    const amount = parseFloat(ingredienteSeleccionado.amount); // Permitir valores decimales
 
     if (isNaN(ingredientId) || isNaN(amount) || amount <= 0) {
       alert('Debe ingresar un ID de ingrediente válido y una cantidad mayor a cero.');
@@ -116,7 +125,7 @@ function ArepasTable() {
             <th>Nombre</th>
             <th>Precio</th>
             <th>Ingredientes</th>
-            <th>Acciones</th>
+            {!isReadOnly && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -124,30 +133,39 @@ function ArepasTable() {
             <tr key={arepa.arepa_id}>
               <td>{arepa.arepa_id}</td>
               <td>
-                <input
-                  type="text"
-                  value={arepa.name}
-                  onChange={(e) =>
-                    setArepas((prev) =>
-                      prev.map((a) =>
-                        a.arepa_id === arepa.arepa_id ? { ...a, name: e.target.value } : a
+                {isReadOnly ? (
+                  arepa.name
+                ) : (
+                  <input
+                    type="text"
+                    value={arepa.name}
+                    onChange={(e) =>
+                      setArepas((prev) =>
+                        prev.map((a) =>
+                          a.arepa_id === arepa.arepa_id ? { ...a, name: e.target.value } : a
+                        )
                       )
-                    )
-                  }
-                />
+                    }
+                  />
+                )}
               </td>
               <td>
-                <input
-                  type="number"
-                  value={arepa.price}
-                  onChange={(e) =>
-                    setArepas((prev) =>
-                      prev.map((a) =>
-                        a.arepa_id === arepa.arepa_id ? { ...a, price: e.target.value } : a
+                {isReadOnly ? (
+                  arepa.price
+                ) : (
+                  <input
+                    type="number"
+                    step="0.1" // Permitir decimales
+                    value={arepa.price}
+                    onChange={(e) =>
+                      setArepas((prev) =>
+                        prev.map((a) =>
+                          a.arepa_id === arepa.arepa_id ? { ...a, price: parseFloat(e.target.value) } : a
+                        )
                       )
-                    )
-                  }
-                />
+                    }
+                  />
+                )}
               </td>
               <td>
                 {arepa.Ingredientes && arepa.Ingredientes.map((ingrediente) => (
@@ -156,49 +174,57 @@ function ArepasTable() {
                   </span>
                 ))}
               </td>
-              <td>
-                <button onClick={() => handleEditArepa(arepa.arepa_id)}>Editar</button>
-                <button onClick={() => handleDeleteArepa(arepa.arepa_id)}>Eliminar</button>
-              </td>
+              {!isReadOnly && (
+                <td>
+                  <button onClick={() => handleEditArepa(arepa.arepa_id)}>Editar</button>
+                  <button onClick={() => handleDeleteArepa(arepa.arepa_id)}>Eliminar</button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
 
-      <h3>Agregar Arepa</h3>
-      <input
-        type="text"
-        placeholder="Nombre"
-        value={newArepa.name}
-        onChange={(e) => setNewArepa({ ...newArepa, name: e.target.value })}
-      />
-      <input
-        type="number"
-        placeholder="Precio"
-        value={newArepa.price}
-        onChange={(e) => setNewArepa({ ...newArepa, price: e.target.value })}
-      />
-      <h4>Agregar Ingrediente</h4>
-      <select
-        value={ingredienteSeleccionado.ingredient_id}
-        onChange={(e) => setIngredienteSeleccionado({ ...ingredienteSeleccionado, ingredient_id: e.target.value })}
-      >
-        <option value="">Seleccione un ingrediente</option>
-        {ingredientesDisponibles.map((ing) => (
-          <option key={ing.ingredient_id} value={ing.ingredient_id}>
-            {ing.name}
-          </option>
-        ))}
-      </select>
-      <input
-        type="number"
-        placeholder="Cantidad"
-        value={ingredienteSeleccionado.amount}
-        onChange={(e) => setIngredienteSeleccionado({ ...ingredienteSeleccionado, amount: parseFloat(e.target.value) })}
-      />
-      <button onClick={handleAddIngredient}>Agregar Ingrediente</button>
+      {!isReadOnly && (
+        <div>
+          <h3>Agregar Arepa</h3>
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={newArepa.name}
+            onChange={(e) => setNewArepa({ ...newArepa, name: e.target.value })}
+          />
+          <input
+            type="number"
+            step="0.1" // Permitir decimales
+            placeholder="Precio"
+            value={newArepa.price}
+            onChange={(e) => setNewArepa({ ...newArepa, price: parseFloat(e.target.value) })}
+          />
+          <h4>Agregar Ingrediente</h4>
+          <select
+            value={ingredienteSeleccionado.ingredient_id}
+            onChange={(e) => setIngredienteSeleccionado({ ...ingredienteSeleccionado, ingredient_id: e.target.value })}
+          >
+            <option value="">Seleccione un ingrediente</option>
+            {ingredientesDisponibles.map((ing) => (
+              <option key={ing.ingredient_id} value={ing.ingredient_id}>
+                {ing.name}
+              </option>
+            ))}
+          </select>
+          <input
+            type="number"
+            step="0.1" // Permitir decimales
+            placeholder="Cantidad"
+            value={ingredienteSeleccionado.amount}
+            onChange={(e) => setIngredienteSeleccionado({ ...ingredienteSeleccionado, amount: parseFloat(e.target.value) })}
+          />
+          <button onClick={handleAddIngredient}>Agregar Ingrediente</button>
 
-      <button onClick={handleAddArepa}>Agregar Arepa</button>
+          <button onClick={handleAddArepa}>Agregar Arepa</button>
+        </div>
+      )}
     </div>
   );
 }

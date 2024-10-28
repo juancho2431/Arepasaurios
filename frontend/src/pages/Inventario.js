@@ -4,13 +4,15 @@ import ArepasTable from '../components/inventory/ArepasTable';
 import BebidasTable from '../components/inventory/BebidasTable';
 import '../styles/Inventario.css';
 
-function InventarioPage() {
+function InventarioPage({ userRole }) {
+  const isReadOnly = userRole === 'Cajero' || userRole === 'Mesero' || userRole === 'Empleado';
+
   return (
     <div>
       <h1>Inventario</h1>
-      <IngredientesTable />
-      <ArepasTable />
-      <BebidasTable />
+      <IngredientesTable isReadOnly={isReadOnly} />
+      <ArepasTable isReadOnly={isReadOnly} />
+      <BebidasTable isReadOnly={isReadOnly} />
     </div>
   );
 }

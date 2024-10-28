@@ -5,6 +5,7 @@ const Arepa = require('./Producto');
 const Bebida = require('./bebida');
 const Ingrediente = require('./Ingrediente');
 const ArepaIngrediente = require('./productosIngrediente');
+const Empleado = require('./Empleado'); 
 
 // Definir las relaciones entre los modelos
 Arepa.belongsToMany(Ingrediente, { through: ArepaIngrediente, foreignKey: 'arepa_id' });
@@ -14,6 +15,8 @@ Ingrediente.belongsToMany(Arepa, { through: ArepaIngrediente, foreignKey: 'ingre
 Ventas.hasMany(VentaDetalle, { foreignKey: 'venta_id', as: 'VentaDetalles' });
 VentaDetalle.belongsTo(Ventas, { foreignKey: 'venta_id' });
 
+
+Ventas.belongsTo(Empleado, { as: 'vendedor', foreignKey: 'vendedor_id' });
 
 // Relación entre VentaDetalle y Arepa
 VentaDetalle.belongsTo(Arepa, {
@@ -46,4 +49,5 @@ module.exports = {
   Bebida,
   Ingrediente,
   ArepaIngrediente,
+  Empleado
 };

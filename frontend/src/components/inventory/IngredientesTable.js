@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function IngredientesTable() {
+function IngredientesTable({ isReadOnly }) {
   const [ingredientes, setIngredientes] = useState([]);
   const [newIngrediente, setNewIngrediente] = useState({
     name: '',
@@ -40,8 +41,6 @@ function IngredientesTable() {
       }
     }
   };
-  
-  
 
   const handleEditIngrediente = async (id) => {
     try {
@@ -72,7 +71,7 @@ function IngredientesTable() {
             <th>Nombre</th>
             <th>Stock Actual</th>
             <th>Stock Mínimo</th>
-            <th>Acciones</th>
+            {!isReadOnly && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -80,73 +79,91 @@ function IngredientesTable() {
             <tr key={ingrediente.ingredient_id}>
               <td>{ingrediente.ingredient_id}</td>
               <td>
-                <input
-                  type="text"
-                  value={ingrediente.name}
-                  onChange={(e) =>
-                    setIngredientes((prev) =>
-                      prev.map((i) =>
-                        i.ingredient_id === ingrediente.ingredient_id ? { ...i, name: e.target.value } : i
+                {isReadOnly ? (
+                  ingrediente.name
+                ) : (
+                  <input
+                    type="text"
+                    value={ingrediente.name}
+                    onChange={(e) =>
+                      setIngredientes((prev) =>
+                        prev.map((i) =>
+                          i.ingredient_id === ingrediente.ingredient_id ? { ...i, name: e.target.value } : i
+                        )
                       )
-                    )
-                  }
-                />
+                    }
+                  />
+                )}
               </td>
               <td>
-                <input
-                  type="number"
-                  value={ingrediente.stock_current}
-                  onChange={(e) =>
-                    setIngredientes((prev) =>
-                      prev.map((i) =>
-                        i.ingredient_id === ingrediente.ingredient_id ? { ...i, stock_current: e.target.value } : i
+                {isReadOnly ? (
+                  ingrediente.stock_current
+                ) : (
+                  <input
+                    type="number"
+                    value={ingrediente.stock_current}
+                    onChange={(e) =>
+                      setIngredientes((prev) =>
+                        prev.map((i) =>
+                          i.ingredient_id === ingrediente.ingredient_id ? { ...i, stock_current: e.target.value } : i
+                        )
                       )
-                    )
-                  }
-                />
+                    }
+                  />
+                )}
               </td>
               <td>
-                <input
-                  type="number"
-                  value={ingrediente.stock_minimum}
-                  onChange={(e) =>
-                    setIngredientes((prev) =>
-                      prev.map((i) =>
-                        i.ingredient_id === ingrediente.ingredient_id ? { ...i, stock_minimum: e.target.value } : i
+                {isReadOnly ? (
+                  ingrediente.stock_minimum
+                ) : (
+                  <input
+                    type="number"
+                    value={ingrediente.stock_minimum}
+                    onChange={(e) =>
+                      setIngredientes((prev) =>
+                        prev.map((i) =>
+                          i.ingredient_id === ingrediente.ingredient_id ? { ...i, stock_minimum: e.target.value } : i
+                        )
                       )
-                    )
-                  }
-                />
+                    }
+                  />
+                )}
               </td>
-              <td>
-                <button onClick={() => handleEditIngrediente(ingrediente.ingredient_id)}>Editar</button>
-                <button onClick={() => handleDeleteIngrediente(ingrediente.ingredient_id)}>Eliminar</button>
-              </td>
+              {!isReadOnly && (
+                <td>
+                  <button onClick={() => handleEditIngrediente(ingrediente.ingredient_id)}>Editar</button>
+                  <button onClick={() => handleDeleteIngrediente(ingrediente.ingredient_id)}>Eliminar</button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
 
-      <h3>Agregar Ingrediente</h3>
-      <input
-        type="text"
-        placeholder="Nombre"
-        value={newIngrediente.name}
-        onChange={(e) => setNewIngrediente({ ...newIngrediente, name: e.target.value })}
-      />
-      <input
-        type="number"
-        placeholder="Stock Actual"
-        value={newIngrediente.stock_current}
-        onChange={(e) => setNewIngrediente({ ...newIngrediente, stock_current: e.target.value })}
-      />
-      <input
-        type="number"
-        placeholder="Stock Mínimo"
-        value={newIngrediente.stock_minimum}
-        onChange={(e) => setNewIngrediente({ ...newIngrediente, stock_minimum: e.target.value })}
-      />
-      <button onClick={handleAddIngrediente}>Agregar</button>
+      {!isReadOnly && (
+        <div>
+          <h3>Agregar Ingrediente</h3>
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={newIngrediente.name}
+            onChange={(e) => setNewIngrediente({ ...newIngrediente, name: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Stock Actual"
+            value={newIngrediente.stock_current}
+            onChange={(e) => setNewIngrediente({ ...newIngrediente, stock_current: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Stock Mínimo"
+            value={newIngrediente.stock_minimum}
+            onChange={(e) => setNewIngrediente({ ...newIngrediente, stock_minimum: e.target.value })}
+          />
+          <button onClick={handleAddIngrediente}>Agregar</button>
+        </div>
+      )}
     </div>
   );
 }
